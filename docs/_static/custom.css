@@ -1,0 +1,65 @@
+/* Dark terminal-like theme */
+body {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    font-family: 'Consolas', 'Courier New', monospace;
+}
+
+.wy-nav-content-wrap {
+    background-color: #1e1e1e;
+}
+
+.wy-nav-content {
+    background-color: #1e1e1e;
+    max-width: 900px;
+}
+
+.wy-side-nav-search {
+    background-color: #252526;
+}
+
+.wy-menu-vertical li.current {
+    background-color: #252526;
+}
+
+.wy-menu-vertical li.toctree-l2.current > a {
+    background-color: #2d2d2d;
+}
+
+.rst-content div[class^="highlight"] {
+    background-color: #252526;
+    border: 1px solid #373737;
+}
+
+.rst-content code {
+    background-color: #252526;
+    border: 1px solid #373737;
+    color: #d4d4d4;
+}
+
+a {
+    color: #569cd6;
+}
+
+a:hover {
+    color: #9cdcfe;
+}
+
+.wy-nav-top {
+    background-color: #252526;
+}
+
+/* Adjust other elements as needed */
+
+/* Add this to your custom.css */
+.rst-content h1::after {
+    content: '|';
+    animation: blink 1s step-end infinite;
+    margin-left: 5px;
+}
+
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
+}

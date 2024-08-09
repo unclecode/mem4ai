@@ -1,32 +1,32 @@
 <!-- <p align="center">
-  <img src="docs/images/memtor-logo.png" width="400px" alt="Memtor - Intelligent Memory Layer for AI and LLM Applications">
+  <img src="docs/images/Mem4AI-logo.png" width="400px" alt="Mem4AI - Intelligent Memory Layer for AI and LLM Applications">
   <p align="center">
-    <a href="https://memtor.readthedocs.io">Documentation</a>
+    <a href="https://Mem4AI.readthedocs.io">Documentation</a>
     ·
-    <a href="https://github.com/unclecode/memtor/issues">Report Bug</a>
+    <a href="https://github.com/unclecode/Mem4AI/issues">Report Bug</a>
     ·
-    <a href="https://github.com/unclecode/memtor/issues">Request Feature</a>
+    <a href="https://github.com/unclecode/Mem4AI/issues">Request Feature</a>
   </p>
 </p>
 
 <p align="center">
-  <a href="https://pypi.org/project/memtor/">
-    <img src="https://badge.fury.io/py/memtor.svg" alt="PyPI version">
+  <a href="https://pypi.org/project/Mem4AI/">
+    <img src="https://badge.fury.io/py/Mem4AI.svg" alt="PyPI version">
   </a>
-  <a href="https://pepy.tech/project/memtor">
-    <img src="https://pepy.tech/badge/memtor/month" alt="Downloads">
+  <a href="https://pepy.tech/project/Mem4AI">
+    <img src="https://pepy.tech/badge/Mem4AI/month" alt="Downloads">
   </a>
-  <a href="https://github.com/unclecode/memtor/blob/main/LICENSE">
-    <img src="https://img.shields.io/github/license/unclecode/memtor.svg" alt="License">
+  <a href="https://github.com/unclecode/Mem4AI/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/unclecode/Mem4AI.svg" alt="License">
   </a>
-  <a href="https://github.com/unclecode/memtor/stargazers">
-    <img src="https://img.shields.io/github/stars/unclecode/memtor.svg" alt="Stars">
+  <a href="https://github.com/unclecode/Mem4AI/stargazers">
+    <img src="https://img.shields.io/github/stars/unclecode/Mem4AI.svg" alt="Stars">
   </a>
 </p> -->
 
-# 🧠 Memtor: Intelligent Memory Layer for AI and LLM Applications
+# 🧠 Mem4AI: A LLM Friendly memory management library.
 
-Memtor enhances AI assistants and agents with an intelligent memory layer, enabling personalized and context-aware AI interactions. Perfect for building smarter chatbots, AI assistants, and autonomous systems that remember and learn.
+Mem4AI enhances AI assistants and agents with an intelligent memory layer, enabling personalized and context-aware AI interactions. Perfect for building smarter chatbots, AI assistants, and autonomous systems that remember and learn.
 
 ## ✨ Core Features
 
@@ -40,16 +40,16 @@ Memtor enhances AI assistants and agents with an intelligent memory layer, enabl
 
 ## 🚀 Quick Start
 
-Install Memtor:
+Install Mem4AI:
 
 ```bash
-pip install memtor
+pip install Mem4AI
 ```
 
-Here's a simple example of how to use Memtor:
+Here's a simple example of how to use Mem4AI:
 
 ```python
-from memtor import Memtor
+from mem4ai import Memtor
 
 # Initialize Memtor
 memtor = Memtor()
@@ -85,7 +85,7 @@ memtor.delete_memory(memory_id)
 
 ## 📚 Documentation
 
-For full documentation, visit [memtor.readthedocs.io](https://memtor.readthedocs.io).
+Coming soon!
 
 ## 🤝 Contributing
 
@@ -93,10 +93,10 @@ We welcome contributions! Check out our [contribution guidelines](CONTRIBUTING.m
 
 ## 📄 License
 
-Memtor is released under the MIT License. See the [LICENSE](LICENSE) file for details.
+Mem4AI is released under the Apache 2.0 license. See [LICENSE](LICENSE) for more information.
 
 ---
 
 Built with ❤️ by Unclecode. (https://x.com/unclecode)
 
-Give Memtor a star ⭐ if you find it helpful!
+Give Mem4AI a star ⭐ if you find it helpful!

@@ -82,9 +82,6 @@ memtor.delete_memory(memory_id)
 - 📊 Personalized recommendation systems
 - 🧠 Knowledge management systems
 - 🎯 Context-aware AI assistants
-- 📝 Note-taking applications with semantic search
-- 🎮 Adaptive gaming experiences
-- 🏥 Patient history management in healthcare
 
 ## 📚 Documentation
 

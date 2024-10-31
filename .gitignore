@@ -168,3 +168,10 @@ cython_debug/
 .pytest_cache
 
 todo.md
+tmp/
+
+git_changes.md
+git_changes.py
+git_issues.py
+git_issues.md
+

@@ -18,6 +18,14 @@ class ConfigManager:
         },
         'memory': {
             'max_history': 5,
+        },
+        'extraction': {
+            'enabled': True,  # Whether to use knowledge extraction
+            'type': 'llm',    # 'llm' or 'simple'
+            'model': 'gpt-4o-mini', # Model for LLM-based strategies
+            'store_full_response': True,
+            'extraction_timeout': 30,
+            'retries': 2,
         }
     }
 

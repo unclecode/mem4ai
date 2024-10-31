@@ -3,46 +3,74 @@ from .core.embedding_manager import EmbeddingManager
 from .strategies.embedding_strategy import get_embedding_strategy, EmbeddingStrategy
 from .strategies.storage_strategy import get_storage_strategy, StorageStrategy
 from .strategies.search_strategy import get_search_strategy, SearchStrategy
+from .strategies.knowledge_extraction import get_extraction_strategy
 from .core.memory import Memory
 from .utils.config_manager import config_manager
 
 class Memtor:
-    def __init__(self, embedding_strategy=None, storage_strategy=None, search_strategy=None):
+    def __init__(self, embedding_strategy=None, storage_strategy=None, 
+             search_strategy=None, extraction_strategy=None):
         """
         Initialize the Memtor instance with the specified strategies.
-        If strategies are not provided, default ones will be used based on the configuration.
+        
+        :param embedding_strategy: Strategy for creating embeddings
+        :param storage_strategy: Strategy for storing memories
+        :param search_strategy: Strategy for searching memories
+        :param extraction_strategy: Strategy for knowledge extraction. 
+                                Can be None to disable extraction
         """
         self.embedding_manager = EmbeddingManager(embedding_strategy)
         self.storage_strategy = storage_strategy or get_storage_strategy()
         self.search_strategy = search_strategy or get_search_strategy(self.embedding_manager)
+        
+        # Handle extraction strategy like other strategies
+        if extraction_strategy is None:
+            # Check config to see if extraction should be enabled
+            if config_manager.get('extraction.enabled', True):
+                self.extraction_strategy = get_extraction_strategy()
+            else:
+                self.extraction_strategy = None
+        else:
+            # If strategy is provided directly, use it
+            self.extraction_strategy = extraction_strategy
 
-
-    def add_memory(self, content: str, metadata: Optional[Dict[str, Any]] = None,
+    def add_memory(self, user_message: str, assistant_response: str, 
+                   metadata: Optional[Dict[str, Any]] = None,
                    user_id: Optional[str] = None, session_id: Optional[str] = None,
                    agent_id: Optional[str] = None) -> str:
         """
-        Add a new memory to the storage.
-
-        :param content: The content of the memory.
-        :param metadata: Additional metadata for the memory.
-        :param user_id: Optional user ID.
-        :param session_id: Optional session ID.
-        :param agent_id: Optional agent ID.
-        :return: The ID of the newly created memory.
+        Add a new memory with both user message and assistant response.
         """
-        if not isinstance(content, str):
-            raise TypeError("Content must be a string")
+        if not isinstance(user_message, str) or not isinstance(assistant_response, str):
+            raise TypeError("Messages must be strings")
 
+        # Combine messages for embedding
+        combined_content = f"User: {user_message}\nAssistant: {assistant_response}"
+        
+        # Extract knowledge context if strategy exists
+        context = None
+        if self.extraction_strategy is not None:
+            try:
+                context = self.extraction_strategy.extract_knowledge(user_message, assistant_response)
+            except Exception as e:
+                print(f"Warning: Knowledge extraction failed: {str(e)}")
+                context = None
+        
+        # Create embedding
+        embedding = self.embedding_manager.embed(combined_content)
+        
+        # Create memory
         metadata = metadata or {}
-        if user_id:
-            metadata['user_id'] = user_id
-        if session_id:
-            metadata['session_id'] = session_id
-        if agent_id:
-            metadata['agent_id'] = agent_id
-
-        embedding = self.embedding_manager.embed(content)
-        memory = Memory(content, metadata, embedding, user_id, session_id, agent_id)
+        memory = Memory(
+            content=combined_content,
+            metadata=metadata,
+            embedding=embedding,
+            context=context,
+            user_id=user_id,
+            session_id=session_id,
+            agent_id=agent_id
+        )
+        
         self.storage_strategy.save(memory)
         return memory.id
 

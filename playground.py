@@ -168,8 +168,170 @@ def test_memtor():
 
     print("All tests passed successfully!")
 
+def test_knowledge_extraction():
+    """Test the knowledge extraction functionality of Memtor"""
+    # Initialize Memtor
+    memtor = Memtor()
+    
+    # Clear previous memories
+    memtor.storage_strategy.clear_all()
+    
+    # Sample user message asking to create a horror movie list
+    user_message = """Can you create a new favorites list called 'Horror Nights' and add some top-rated recent horror movies? I prefer psychological horror over gore."""
+
+    # Sample assistant response with both JSON data and natural language
+    assistant_response = """{
+        "action": "create_and_populate_list",
+        "list": {
+            "name": "Horror Nights",
+            "id": "hn_123",
+            "movies": [
+                {"id": "m1", "title": "Talk to Me", "year": 2023, "rating": 7.1},
+                {"id": "m2", "title": "Hereditary", "year": 2018, "rating": 7.3},
+                {"id": "m3", "title": "The Black Phone", "year": 2021, "rating": 7.0}
+            ]
+        }
+    }
+    I've created a new list called 'Horror Nights' and added some highly-rated psychological horror movies. I included 'Talk to Me' (2023) which deals with supernatural communication, 'Hereditary' (2018) which is a masterpiece of psychological horror, and 'The Black Phone' (2021) which blends supernatural elements with psychological tension. Would you like me to add more movies or adjust the selection based on your preferences?"""
+
+    # Add memory with the conversation
+    memory_id = memtor.add_memory(user_message, assistant_response)
+
+    # Retrieve the memory to check the extracted context
+    memory = memtor.get_memory(memory_id)
+    assert memory is not None, "Failed to retrieve memory"
+    
+    # Verify context structure
+    assert 'context' in memory.__dict__, "Memory doesn't have context field"
+    context = memory.context
+    
+    # Basic structure checks
+    assert 'timestamp' in context, "Context missing timestamp"
+    assert 'interaction_type' in context, "Context missing interaction_type"
+    assert context['interaction_type'] == 'action_based', "Incorrect interaction type"
+    
+    # Check action details
+    assert 'action_details' in context, "Context missing action_details"
+    action_details = context['action_details']
+    assert action_details['primary_action']['type'] == 'creation', "Incorrect action type"
+    assert action_details['primary_action']['target'] == 'favorite_list', "Incorrect action target"
+    assert 'Horror Nights' in action_details['modified_elements']['lists'], "Created list not in modified elements"
+    
+    # Check conversation details
+    assert 'conversation_details' in context, "Context missing conversation_details"
+    conv_details = context['conversation_details']
+    assert conv_details['intent'] == 'movie_organization', "Incorrect conversation intent"
+    assert 'horror' in conv_details['key_information']['explicit_mentions'], "Missing explicit mention of horror"
+    
+    # Check referenced values
+    assert 'Talk to Me' in conv_details['referenced_values']['movies'], "Missing referenced movie"
+    assert '7.1' in conv_details['referenced_values']['ratings'], "Missing referenced rating"
+    assert '2023' in conv_details['referenced_values']['dates'], "Missing referenced date"
+    
+    # Check summary
+    assert 'summary' in context, "Context missing summary"
+    assert len(context['summary']['key_points']) > 0, "Summary missing key points"
+    
+    # Test searching with extracted knowledge
+    search_results = memtor.search_memories("psychological horror movies")
+    assert len(search_results) > 0, "Failed to find memory using extracted knowledge"
+    assert memory_id == search_results[0].id, "Search didn't return the correct memory"
+    
+    # Test another type of interaction (conversational)
+    user_message_2 = "What did you think about the ending of Hereditary?"
+    assistant_response_2 = "The ending of Hereditary is particularly haunting because it shows the culmination of the family's tragic fate. The final scene in the treehouse reveals that the entire series of events was orchestrated by the cult of Paimon. The possession of Peter and his ritualistic crowning as Paimon's vessel creates a deeply disturbing conclusion that fits perfectly with the film's themes of family trauma and predestination."
+    
+    memory_id_2 = memtor.add_memory(user_message_2, assistant_response_2)
+    memory_2 = memtor.get_memory(memory_id_2)
+    
+    # Verify conversational context
+    context_2 = memory_2.context
+    assert context_2['interaction_type'] == 'conversational', "Incorrect interaction type for conversation"
+    assert 'Hereditary' in context_2['conversation_details']['referenced_values']['movies'], "Missing movie reference"
+    assert context_2['conversation_details']['intent'] == 'information_query', "Incorrect conversation intent"
+    
+    print("All knowledge extraction tests passed successfully!")
+
+def test_summary_knowledge_extraction():
+    """Test the simple summary knowledge extraction functionality of Memtor"""
+    # Initialize Memtor with simple extraction strategy
+    from mem4ai.strategies.knowledge_extraction import SimpleLLMExtractionStrategy
+    memtor = Memtor(extraction_strategy=SimpleLLMExtractionStrategy())
+    
+    # Clear previous memories
+    memtor.storage_strategy.clear_all()
+    
+    # Sample user message asking to create a horror movie list
+    user_message = """Can you create a new favorites list called 'Horror Nights' and add some top-rated recent horror movies? I prefer psychological horror over gore."""
+
+    # Sample assistant response with both JSON data and natural language
+    assistant_response = """{
+        "action": "create_and_populate_list",
+        "list": {
+            "name": "Horror Nights",
+            "id": "hn_123",
+            "movies": [
+                {"id": "m1", "title": "Talk to Me", "year": 2023, "rating": 7.1},
+                {"id": "m2", "title": "Hereditary", "year": 2018, "rating": 7.3},
+                {"id": "m3", "title": "The Black Phone", "year": 2021, "rating": 7.0}
+            ]
+        }
+    }
+    I've created a new list called 'Horror Nights' and added some highly-rated psychological horror movies. I included 'Talk to Me' (2023) which deals with supernatural communication, 'Hereditary' (2018) which is a masterpiece of psychological horror, and 'The Black Phone' (2021) which blends supernatural elements with psychological tension. Would you like me to add more movies or adjust the selection based on your preferences?"""
+
+    # Add memory with the conversation
+    memory_id = memtor.add_memory(user_message, assistant_response)
+
+    # Retrieve the memory to check the extracted context
+    memory = memtor.get_memory(memory_id)
+    assert memory is not None, "Failed to retrieve memory"
+    
+    # Verify context structure
+    assert 'context' in memory.__dict__, "Memory doesn't have context field"
+    context = memory.context
+    
+    # Basic structure checks
+    assert 'timestamp' in context, "Context missing timestamp"
+    assert 'interaction_type' in context, "Context missing interaction_type"
+    assert context['interaction_type'] == 'task', "Incorrect interaction type"
+    
+    # Check summary
+    assert 'summary' in context, "Context missing summary"
+    assert isinstance(context['summary'], str), "Summary should be a string"
+    assert 'Horror Nights' in context['summary'], "Summary should mention the created list"
+    
+    # Check keywords
+    assert 'keywords' in context, "Context missing keywords"
+    assert isinstance(context['keywords'], list), "Keywords should be a list"
+    assert any('horror' in keyword.lower() for keyword in context['keywords']), "Keywords should include 'horror'"
+    assert any('psychological' in keyword.lower() for keyword in context['keywords']), "Keywords should include 'psychological'"
+    
+    # Test conversational interaction
+    user_message_2 = "What did you think about the ending of Hereditary?"
+    assistant_response_2 = "The ending of Hereditary is particularly haunting because it shows the culmination of the family's tragic fate. The final scene in the treehouse reveals that the entire series of events was orchestrated by the cult of Paimon. The possession of Peter and his ritualistic crowning as Paimon's vessel creates a deeply disturbing conclusion that fits perfectly with the film's themes of family trauma and predestination."
+    
+    memory_id_2 = memtor.add_memory(user_message_2, assistant_response_2)
+    memory_2 = memtor.get_memory(memory_id_2)
+    
+    # Verify conversational context
+    context_2 = memory_2.context
+    assert context_2['interaction_type'] == 'discussion', "Incorrect interaction type for conversation"
+    assert isinstance(context_2['summary'], str), "Summary should be a string"
+    assert 'Hereditary' in context_2['summary'], "Summary should mention the movie"
+    assert any('ending' in keyword.lower() for keyword in context_2['keywords']), "Keywords should include 'ending'"
+    assert any('hereditary' in keyword.lower() for keyword in context_2['keywords']), "Keywords should include 'hereditary'"
+    
+    # Test searching with extracted knowledge
+    search_results = memtor.search_memories("psychological horror")
+    assert len(search_results) > 0, "Failed to find memory using extracted knowledge"
+    assert memory_id == search_results[0].id, "Search didn't return the correct memory"
+    
+    print("All summary knowledge extraction tests passed successfully!")
+    
 if __name__ == "__main__":
     # test_embedding()
     # test_storage()
     # test_search_strategy()  
-    test_memtor()
+    # test_memtor()
+    # test_knowledge_extraction()
+    test_summary_knowledge_extraction()

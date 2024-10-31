@@ -8,7 +8,7 @@ with open(os.path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 # Read the project version from package __init__.py
 def read_version():
-    with open(os.path.join('memtor', '__init__.py'), 'r') as f:
+    with open(os.path.join('mem4ai', '__init__.py'), 'r') as f:
         for line in f:
             if line.startswith('__version__'):
                 return line.split('=')[1].strip().strip("'").strip('"')
@@ -22,7 +22,7 @@ setup(
     description='A powerful memory management library for LLMs and AI systems',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='https://github.com/unclecode/memtor',
+    url='https://github.com/unclecode/mem4ai',
     packages=find_packages(exclude=('tests', 'docs')),
     classifiers=[
         'Development Status :: 3 - Alpha',
@@ -59,8 +59,8 @@ setup(
     include_package_data=True,
     keywords='memory management llm ai',
     project_urls={
-        'Bug Reports': 'https://github.com/unclecode/memtor/issues',
-        'Source': 'https://github.com/unclecode/memtor/',
-        'Documentation': 'https://memtor.readthedocs.io/',
+        'Bug Reports': 'https://github.com/unclecode/mem4ai/issues',
+        'Source': 'https://github.com/unclecode/mem4ai/',
+        'Documentation': 'https://mem4ai.readthedocs.io/',
     },
 )

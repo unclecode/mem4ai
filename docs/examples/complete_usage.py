@@ -1,7 +1,7 @@
 """
 Memtor: Complete Usage Guide
 
-This script demonstrates all the features and functionalities of the Memtor library.
+This script demonstrates all the features and functionalities of the Mem4AI library.
 It covers initialization, memory operations, searching, filtering, and advanced usage.
 """
 
@@ -10,7 +10,7 @@ from mem4ai.strategies import CustomEmbeddingStrategy, CustomStorageStrategy, Cu
 import numpy as np
 
 def main():
-    # Initialize Memtor
+    # Initialize Mem4AI Memtor
     print("Initializing Memtor...")
     memtor = Memtor()
     print("Memtor initialized successfully.\n")
@@ -184,7 +184,7 @@ def main():
 
     print("Configuration demonstration completed.\n")
 
-    print("Memtor complete usage guide finished.")
+    print("Mem4AI complete usage guide finished.")
 
 if __name__ == "__main__":
     main()

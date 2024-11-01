@@ -1,5 +1,31 @@
 # Changelog
 
+## [31-Oct-2024] Enhanced Memory Storage and Retrieval System
+
+### Added
+- Timestamp tracking for all memories
+- New indexed storage capabilities:
+  - Timestamp-based indexing
+  - Metadata-based indexing
+  - Multi-dimensional filtering
+- New retrieval methods:
+  - `find_recent`: Get latest memories with optional filters
+  - `find_by_time`: Query memories within time ranges
+  - `find_by_meta`: Search using metadata combinations
+- Separate LMDB environments for efficient index management
+
+### Enhanced
+- Memory class with automatic timestamp tracking
+- Storage strategy with improved filtering capabilities
+- LMDB storage implementation with index management
+- Deletion handling with proper index cleanup
+
+### Developer Notes
+- Added comprehensive test suite for storage and retrieval
+- Implemented efficient index updating mechanisms
+- Added support for complex queries combining time and metadata filters
+- Improved memory cleanup with proper index maintenance
+
 ## [31-Oct-2024] Knowledge Extraction for Enhanced Memory Context
 
 ### Added

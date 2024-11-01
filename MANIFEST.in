@@ -1,0 +1,6 @@
+include README.md
+recursive-include mem4ai *.py
+recursive-include mem4ai/core *.py
+recursive-include mem4ai/strategies *.py
+recursive-include mem4ai/utils *.py
+recursive-include mem4ai/strategies/knowledge_extraction *.py

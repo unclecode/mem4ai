@@ -1,6 +1,7 @@
 from .base import KnowledgeExtractionStrategy
 from .llm import LLMExtractionStrategy
-from .summary import SimpleLLMExtractionStrategy
+from .summary import SummaryExtractionStrategy
+from .echo import EchoKnowledgeStrategy
 from ...utils.config_manager import config_manager
 
 def get_extraction_strategy() -> KnowledgeExtractionStrategy:
@@ -12,7 +13,7 @@ def get_extraction_strategy() -> KnowledgeExtractionStrategy:
     if strategy_name == 'llm':
         return LLMExtractionStrategy()
     elif strategy_name == 'simple':
-        return SimpleLLMExtractionStrategy()
+        return SummaryExtractionStrategy()
     elif strategy_name == 'none':
         return None
     else:
@@ -22,6 +23,7 @@ def get_extraction_strategy() -> KnowledgeExtractionStrategy:
 __all__ = [
     'KnowledgeExtractionStrategy',
     'LLMExtractionStrategy',
-    'SimpleLLMExtractionStrategy',
-    'get_extraction_strategy'
+    'SummaryExtractionStrategy',
+    'get_extraction_strategy',
+    'EchoKnowledgeStrategy',
 ]

@@ -255,8 +255,8 @@ def test_knowledge_extraction():
 def test_summary_knowledge_extraction():
     """Test the simple summary knowledge extraction functionality of Memtor"""
     # Initialize Memtor with simple extraction strategy
-    from mem4ai.strategies.knowledge_extraction import SimpleLLMExtractionStrategy
-    memtor = Memtor(extraction_strategy=SimpleLLMExtractionStrategy())
+    from mem4ai.strategies.knowledge_extraction import SummaryExtractionStrategy
+    memtor = Memtor(extraction_strategy=SummaryExtractionStrategy())
     
     # Clear previous memories
     memtor.storage_strategy.clear_all()

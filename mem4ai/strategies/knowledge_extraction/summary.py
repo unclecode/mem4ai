@@ -21,7 +21,7 @@ class SimpleSummaryContext(BaseModel):
     )
 
 
-class SimpleLLMExtractionStrategy(KnowledgeExtractionStrategy):
+class SummaryExtractionStrategy(KnowledgeExtractionStrategy):
     def __init__(self):
         self.model = config_manager.get("extraction.model", "gpt-4o-mini")
         self.api_key = config_manager.get(

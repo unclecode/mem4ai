@@ -7,7 +7,7 @@ import os, json
 from .base import KnowledgeExtractionStrategy
 from ...utils.config_manager import config_manager
 
-class EchoStrategy(KnowledgeExtractionStrategy):
+class EchoKnowledgeStrategy(KnowledgeExtractionStrategy):
     def __init__(self):
         pass
 

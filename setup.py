@@ -38,7 +38,7 @@ setup(
     ],
     python_requires='>=3.7',
     install_requires=[
-        'numpy>=2.0.1',
+        'numpy>=1.26.0,<2.1.1',
         'scikit-learn>=1.5.1',
         'lmdb>=1.5.1',
         'litellm>=1.43.4',  # Adjust version as needed

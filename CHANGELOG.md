@@ -1,9 +1,9 @@
 # Changelog
 
-## Update numpy dependency version in setup.py
+## [2024-11-01 15:20:40] Update numpy dependency version in setup.py
 Changed the numpy dependency from 'numpy>=2.0.1' to 'numpy>=1.26.0,<2.1.1' to ensure compatibility with existing code and prevent potential issues with version 2.0 or higher.
 
-## [2024-11-01 16:20:40] ## [2024-11-01 - 16:20] Version Update and New Strategy Inclusion
+## [2024-11-01 - 16:20] Version Update and New Strategy Inclusion
 Updated the package version to 0.1.1. Included 'KnowledgeExtractionStrategy' in the package exports to enhance functionality.
 
 ## [31-Oct-2024] Enhanced Memory Storage and Retrieval System

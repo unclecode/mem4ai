@@ -1,5 +1,8 @@
 # Changelog
 
+## [2024-11-01 16:20:40] ## [2024-11-01 - 16:20] Version Update and New Strategy Inclusion
+Updated the package version to 0.1.1. Included 'KnowledgeExtractionStrategy' in the package exports to enhance functionality.
+
 ## [31-Oct-2024] Enhanced Memory Storage and Retrieval System
 
 ### Added

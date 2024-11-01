@@ -10,13 +10,14 @@ from .core.memory import Memory
 from .strategies.embedding_strategy import EmbeddingStrategy
 from .strategies.storage_strategy import StorageStrategy
 from .strategies.search_strategy import SearchStrategy
+from .strategies.knowledge_extraction import KnowledgeExtractionStrategy
 from .utils.config_manager import config_manager
 
 # Version of the memtor package
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 # Define what should be importable from the package
-__all__ = ['Memtor', 'Memory', 'EmbeddingStrategy', 'StorageStrategy', 'SearchStrategy', 'config_manager']
+__all__ = ['Memtor', 'Memory', 'EmbeddingStrategy', 'StorageStrategy', 'SearchStrategy', 'config_manager', 'KnowledgeExtractionStrategy']
 
 # Package level initialization code (if any)
 def initialize():

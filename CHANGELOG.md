@@ -1,6 +1,6 @@
 # Changelog
 
-## ## [2024-11-01 - 17:57] Update Package Inclusion in Setup Configuration
+## [2024-11-01 - 17:57] Update Package Inclusion in Setup Configuration
 Modified the package inclusion to allow only packages starting with 'mem4ai' and added package data to include JSON and YAML configuration files.
 
 ## [2024-11-01 15:20:40] Update numpy dependency version in setup.py

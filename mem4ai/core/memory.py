@@ -1,5 +1,6 @@
 import uuid
 from typing import Any, Dict, List, Optional
+from datetime import datetime
 
 class Memory:
     def __init__(self, content: str, metadata: Optional[Dict[str, Any]] = None, 
@@ -12,6 +13,7 @@ class Memory:
         self.context = context or {}  # New field for extracted knowledge
         self.metadata = metadata or {}
         self.update_history = []
+        self.timestamp = datetime.now()
         
         if user_id:
             self.metadata['user_id'] = user_id

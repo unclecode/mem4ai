@@ -328,10 +328,165 @@ def test_summary_knowledge_extraction():
     
     print("All summary knowledge extraction tests passed successfully!")
     
+def test_enhanced_storage_retrieval():
+    """Test the enhanced storage retrieval capabilities"""
+    from datetime import datetime, timedelta
+    from mem4ai.strategies.storage_strategy import LMDBStorageStrategy
+    from mem4ai.core.memory import Memory
+    
+    # Initialize storage
+    storage = LMDBStorageStrategy()
+    storage.clear_all()  # Start with clean storage
+    
+    print("\nTesting Enhanced Storage Retrieval...")
+    
+    # Create test data spanning different times, users, sessions, and agents
+    base_time = datetime(2024, 1, 1, 12, 0)  # Start from noon on Jan 1, 2024
+    test_data = [
+        # User 1, Session 1, Agent 1
+        {
+            "content": "Memory 1 for User 1",
+            "metadata": {"user_id": "user1", "session_id": "session1", "agent_id": "agent1"},
+            "time_offset": timedelta(hours=1)
+        },
+        {
+            "content": "Memory 2 for User 1",
+            "metadata": {"user_id": "user1", "session_id": "session1", "agent_id": "agent1"},
+            "time_offset": timedelta(hours=2)
+        },
+        # User 1, Session 2, Agent 2
+        {
+            "content": "Memory 3 for User 1",
+            "metadata": {"user_id": "user1", "session_id": "session2", "agent_id": "agent2"},
+            "time_offset": timedelta(hours=3)
+        },
+        # User 2, Session 3, Agent 1
+        {
+            "content": "Memory 4 for User 2",
+            "metadata": {"user_id": "user2", "session_id": "session3", "agent_id": "agent1"},
+            "time_offset": timedelta(hours=4)
+        },
+        # User 2, Session 3, Agent 2
+        {
+            "content": "Memory 5 for User 2",
+            "metadata": {"user_id": "user2", "session_id": "session3", "agent_id": "agent2"},
+            "time_offset": timedelta(hours=5)
+        }
+    ]
+    
+    # Store test memories
+    stored_ids = []
+    for data in test_data:
+        memory = Memory(
+            content=data["content"],
+            metadata=data["metadata"]
+        )
+        memory.timestamp = base_time + data["time_offset"]
+        storage.save(memory)
+        stored_ids.append(memory.id)
+        
+    print("Test data stored successfully.")
+
+    # Test 1: Recent memories with no filters
+    print("\nTest 1: Recent memories (no filters)")
+    recent_memories = storage.find_recent(limit=3)
+    assert len(recent_memories) == 3, f"Expected 3 recent memories, got {len(recent_memories)}"
+    assert recent_memories[0].content == "Memory 5 for User 2", "Most recent memory should be Memory 5"
+    print("✓ Recent memories test passed")
+
+    # Test 2: Recent memories for specific user
+    print("\nTest 2: Recent memories for User 1")
+    user1_memories = storage.find_recent(limit=5, user_id="user1")
+    assert len(user1_memories) == 3, f"Expected 3 memories for user1, got {len(user1_memories)}"
+    assert all(m.metadata["user_id"] == "user1" for m in user1_memories), "All memories should be from user1"
+    print("✓ User-specific recent memories test passed")
+
+    # Test 3: Time range queries
+    print("\nTest 3: Time range queries")
+    time_range_start = base_time + timedelta(hours=2)
+    time_range_end = base_time + timedelta(hours=4)
+    time_range_memories = storage.find_by_time(
+        start_time=time_range_start,
+        end_time=time_range_end
+    )
+    assert len(time_range_memories) == 3, f"Expected 3 memories in time range, got {len(time_range_memories)}"
+    print("✓ Time range query test passed")
+
+    # Test 4: Time range with user filter
+    print("\nTest 4: Time range for specific user")
+    user_time_memories = storage.find_by_time(
+        start_time=base_time,
+        end_time=base_time + timedelta(hours=6),
+        user_id="user2"
+    )
+    assert len(user_time_memories) == 2, f"Expected 2 memories for user2 in time range, got {len(user_time_memories)}"
+    assert all(m.metadata["user_id"] == "user2" for m in user_time_memories), "All memories should be from user2"
+    print("✓ Time range with user filter test passed")
+
+    # Test 5: Metadata combination queries
+    print("\nTest 5: Multiple metadata filters")
+    filtered_memories = storage.find_by_meta({
+        "user_id": "user1",
+        "session_id": "session1",
+        "agent_id": "agent1"
+    })
+    assert len(filtered_memories) == 2, f"Expected 2 memories with combined filters, got {len(filtered_memories)}"
+    print("✓ Multiple metadata filters test passed")
+
+    # Test 6: Partial metadata queries
+    print("\nTest 6: Partial metadata filters")
+    session_agent_memories = storage.find_by_meta({
+        "session_id": "session3",
+        "agent_id": "agent1"
+    })
+    assert len(session_agent_memories) == 1, f"Expected 1 memory with session3/agent1, got {len(session_agent_memories)}"
+    print("✓ Partial metadata filters test passed")
+
+    # Test 7: Recent memories with multiple filters
+    print("\nTest 7: Recent memories with multiple filters")
+    recent_filtered = storage.find_recent(
+        limit=5,
+        user_id="user1",
+        agent_id="agent1"
+    )
+    assert len(recent_filtered) == 2, f"Expected 2 recent filtered memories, got {len(recent_filtered)}"
+    assert all(m.metadata["user_id"] == "user1" and m.metadata["agent_id"] == "agent1" 
+              for m in recent_filtered), "Incorrect filter application"
+    print("✓ Recent memories with multiple filters test passed")
+
+    # Test 8: Edge cases
+    print("\nTest 8: Edge cases")
+    # Test empty time range
+    empty_time_range = storage.find_by_time(
+        start_time=base_time - timedelta(days=1),
+        end_time=base_time - timedelta(hours=1)
+    )
+    assert len(empty_time_range) == 0, "Should get no memories for empty time range"
+
+    # Test non-existent metadata
+    no_results = storage.find_by_meta({"user_id": "nonexistent"})
+    assert len(no_results) == 0, "Should get no memories for non-existent metadata"
+    
+    # Test future time range
+    future_memories = storage.find_by_time(
+        start_time=base_time + timedelta(days=1),
+        end_time=base_time + timedelta(days=2)
+    )
+    assert len(future_memories) == 0, "Should get no memories for future time range"
+    print("✓ Edge cases test passed")
+
+    # Clean up
+    storage.clear_all()
+    print("\nAll enhanced storage retrieval tests passed successfully!")
+
 if __name__ == "__main__":
+    # Existing tests...
     # test_embedding()
     # test_storage()
-    # test_search_strategy()  
+    # test_search_strategy()
     # test_memtor()
     # test_knowledge_extraction()
-    test_summary_knowledge_extraction()
+    # test_summary_knowledge_extraction()
+    
+    # New enhanced storage test
+    test_enhanced_storage_retrieval()

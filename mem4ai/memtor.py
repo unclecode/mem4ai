@@ -6,6 +6,7 @@ from .strategies.search_strategy import get_search_strategy, SearchStrategy
 from .strategies.knowledge_extraction import get_extraction_strategy
 from .core.memory import Memory
 from .utils.config_manager import config_manager
+from datetime import datetime
 
 class Memtor:
     def __init__(self, embedding_strategy=None, storage_strategy=None, 
@@ -182,38 +183,96 @@ class Memtor:
 
         return filtered_memories
 
-    def search_memories(self, query: str, top_k: int = 10, user_id: Optional[str] = None,
-                        session_id: Optional[str] = None, agent_id: Optional[str] = None,
-                        keywords: Optional[List[str]] = None, metadata_filters: Optional[List[Tuple[str, str, Any]]] = None) -> List[Memory]:
+    def search_memories(self, query: Optional[str] = None, top_k: int = 10, 
+                    start_time: Optional[datetime] = None, end_time: Optional[datetime] = None,
+                    user_id: Optional[str] = None, session_id: Optional[str] = None,
+                    agent_id: Optional[str] = None, keywords: Optional[List[str]] = None,
+                    metadata_filters: Optional[List[Tuple[str, str, Any]]] = None,
+                    sort_by: str = 'relevance') -> List[Memory]:
         """
-        Search memories based on a query and optional filters.
-
-        :param query: The search query.
-        :param top_k: The number of top results to return.
-        :param user_id: Optional user ID to filter memories.
-        :param session_id: Optional session ID to filter memories.
-        :param agent_id: Optional agent ID to filter memories.
-        :param keywords: Optional list of keywords to boost in the search.
-        :param metadata_filters: Optional list of metadata filters.
-        :return: List of Memory objects that match the search criteria.
+        Enhanced search function that supports multiple search modes and combinations.
+        
+        :param query: Optional search query for semantic search
+        :param top_k: Maximum number of results to return
+        :param start_time: Optional start time for time-range filtering
+        :param end_time: Optional end time for time-range filtering
+        :param user_id: Optional user ID filter
+        :param session_id: Optional session ID filter
+        :param agent_id: Optional agent ID filter
+        :param keywords: Optional list of keywords to boost in search
+        :param metadata_filters: Optional list of metadata filters as (key, op, value) tuples
+        :param sort_by: How to sort results ('relevance', 'time_desc', 'time_asc')
+        :return: List of Memory objects matching the search criteria
         """
-        if not isinstance(query, str):
-            raise TypeError("Query must be a string")
+        # Input validation
+        if sort_by not in ('relevance', 'time_desc', 'time_asc'):
+            raise ValueError("sort_by must be one of: 'relevance', 'time_desc', 'time_asc'")
 
-        all_memories = self.list_memories(user_id, session_id, agent_id, metadata_filters)
-        return self.search_strategy.search(query, all_memories, top_k, keywords or [], metadata_filters or [])
+        # Build metadata filters dictionary
+        meta_dict = {}
+        if user_id:
+            meta_dict['user_id'] = user_id
+        if session_id:
+            meta_dict['session_id'] = session_id
+        if agent_id:
+            meta_dict['agent_id'] = agent_id
 
-    # def configure(self, **kwargs):
-    #     """
-    #     Update the configuration of the Memtor instance.
+        # Determine search mode and get initial results
+        if query:
+            # Semantic search mode
+            if start_time or end_time:
+                # Get time-filtered memories first
+                memories = self.storage_strategy.find_by_time(
+                    start_time or datetime.min,
+                    end_time or datetime.max,
+                    **meta_dict
+                )
+                # Then apply semantic search
+                results = self.search_strategy.search(
+                    query=query,
+                    memories=memories,
+                    top_k=top_k,
+                    keywords=keywords or [],
+                    metadata_filters=metadata_filters or []
+                )
+            else:
+                # Get filtered memories and apply semantic search
+                memories = self.storage_strategy.find_by_meta(meta_dict) if meta_dict else self.storage_strategy.list_all()
+                if metadata_filters:
+                    memories = self.storage_strategy.apply_filters(memories, metadata_filters)
+                results = self.search_strategy.search(
+                    query=query,
+                    memories=memories,
+                    top_k=top_k,
+                    keywords=keywords or [],
+                    metadata_filters=[]  # Already applied
+                )
+        else:
+            # Non-semantic search mode
+            if start_time or end_time:
+                # Time-based search
+                results = self.storage_strategy.find_by_time(
+                    start_time or datetime.min,
+                    end_time or datetime.max,
+                    **meta_dict
+                )
+            elif meta_dict or metadata_filters:
+                # Metadata-based search
+                results = self.storage_strategy.find_by_meta(meta_dict)
+                if metadata_filters:
+                    results = self.storage_strategy.apply_filters(results, metadata_filters)
+            else:
+                # Recent memories
+                results = self.storage_strategy.find_recent(top_k, **meta_dict)
 
-    #     :param kwargs: Configuration key-value pairs to update.
-    #     """
-    #     for key, value in kwargs.items():
-    #         config_manager.config[key].update(value)
-    #     config_manager.save()
-    #     self.embedding_manager.dimension = config_manager.get('embedding.dimension', 512)
-        # Add other updates here as needed
+        # Sort results if needed
+        if sort_by != 'relevance' or not query:
+            if sort_by == 'time_desc' or not query:
+                results = sorted(results, key=lambda x: x.timestamp, reverse=True)
+            elif sort_by == 'time_asc':
+                results = sorted(results, key=lambda x: x.timestamp)
+
+        return results[:top_k]
 
     def __repr__(self):
         return f"Memtor(embedding_strategy={self.embedding_manager.embedding_strategy.__class__.__name__}, " \

@@ -1,5 +1,8 @@
 # Changelog
 
+## [2024-11-01 - 18:05] Added Initial Modules for Core, Strategies, and Utils
+Initialized new files for core, strategies, and utilities modules. This update lays the foundation for further development in the project, enabling better organization and modularization of code.
+
 ## [2024-11-01 - 17:57] Update Package Inclusion in Setup Configuration
 Modified the package inclusion to allow only packages starting with 'mem4ai' and added package data to include JSON and YAML configuration files.
 

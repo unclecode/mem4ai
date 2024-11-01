@@ -1,4 +1,4 @@
-import uuid
+import uuid, json
 from typing import Any, Dict, List, Optional
 from datetime import datetime
 
@@ -30,10 +30,23 @@ class Memory:
             "context": self.context.copy()  # Also store context history
         })
         self.content = new_content
+        self.timestamp = datetime.now()
         if new_metadata:
             self.metadata.update(new_metadata)
         if new_context:
             self.context.update(new_context)
 
+    
+    def dumps(self) -> Dict[str, Any]:
+        return json.dumps({
+            "id": self.id,
+            "content": self.content,
+            # "embedding": self.embedding,
+            "context": self.context,
+            "metadata": self.metadata,
+            # "update_history": self.update_history,
+            "timestamp": self.timestamp.isoformat()
+        })
+    
     def __repr__(self):
         return f"Memory(id={self.id}, content={self.content[:50]}...)"

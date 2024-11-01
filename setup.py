@@ -23,7 +23,8 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/unclecode/mem4ai',
-    packages=find_packages(exclude=('tests', 'docs')),
+    packages=find_packages(include=['mem4ai*']),  # Modified this line
+    package_data={'': ['*.json', '*.yaml', '*.yml']},  # Added this line for config files if any
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
